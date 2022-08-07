@@ -32,6 +32,8 @@ public class HomeController {
 		Pageable pageObject = PageRequest.of(page, size, Sort.by(Order.asc("firstname"), Order.asc("lastname")));
 
 		Page<Person> result = personRepository.findByNameContaining(search, pageObject);
+		
+		model.addAttribute("pages", new int[result.getTotalPages()]);
 		model.addAttribute("persons", result.getContent());
 		return "index";
 	}

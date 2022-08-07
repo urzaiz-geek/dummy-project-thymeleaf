@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.urzaizcoding.dummyspringthymeleaf.utils.UtilityClass;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +41,7 @@ public class Person {
 
 	@Column(length = 50)
 	private String lastname;
-	@Column(columnDefinition = "TIMESTAMP", nullable = false)
+	@Column(columnDefinition = "DATE", nullable = false)
 	private LocalDate birthDate;
 	@Column(length = 1, nullable = false)
 	private Sex sex;
@@ -54,4 +56,12 @@ public class Person {
 	private String photoPath;
 	@Embedded
 	private Address address;
+	
+	public String getSex() {
+		return UtilityClass.capitalize(sex.name());
+	}
+	
+	public String getMaritalStatus() {
+		return UtilityClass.capitalize(maritalStatus.name());
+	}
 }
