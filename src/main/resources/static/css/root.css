@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+.form-control {
+	position: relative;
+}
+
+.icon {
+	position: absolute;
+	z-index: 10;
+	top: calc(30%);
+	left: 0.5rem;
+}
+
+.input-icon {
+	padding-left: 1.5rem;
+}

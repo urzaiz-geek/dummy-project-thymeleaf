@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layoutPage">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Home</title>
+<link rel="stylesheet"
+	href="webjars/bootstrap/5.1.3/css/bootstrap.min.css" />
+<link rel="stylesheet" th:href="@{/css/root.css}" />
+<script type="text/javascript" src="webjars/bootstrap/5.1.3/js/bootstrap.bundle.js"></script>
+<script src="https://kit.fontawesome.com/d39d52ad71.js"
+	crossorigin="anonymous"></script>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="container mt-2">
+			<div class="card">
+				<div class="card-header">Person List</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-end">
+						<div class="col-md-4">
+							<form method="get" th:action="@{persons}">
+								<div class="input-group mb-3">
+									<i class="icon fa-solid fa-magnifying-glass"></i> <input type="text"
+										name="search" th:value="${search}"
+										class="form-control-sm rounded-pill input-icon" placeholder="Search..."
+										aria-label="Search keyword">
+									<button class="btn-sm btn-primary rounded-pill ms-1">Search</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>First Name</th>
+								<th>Last Name</th>
+								<th>Birth Date</th>
+								<th>Sex</th>
+								<th>Marital Status</th>
+								<th class="text-center">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="p:${persons}">
+								<td th:text="${p.firstname}"></td>
+								<td th:text="${p.lastname}"></td>
+								<td th:text="${p.birthDate}"></td>
+								<td th:text="${p.getSex()}"></td>
+								<td th:text="${p.getMaritalStatus()}"></td>
+								<td>
+									<div class="d-flex justify-content-evenly">
+										<div>
+											<form th:method="delete"
+												th:action="@{/persons/{id}(id=${p.id},page=${paging.getCurrentPage()},search=${search})}">
+												<button type="submit" data-toggle="tooltip" title="delete this person" class="btn-sm btn-danger">
+													<i class="fa-regular fa-trash-can"></i>
+												</button>
+											</form>
+										</div>
+										<div>
+											<form method="post"
+												th:action="@{/persons/delete(page=${paging.getCurrentPage()},search=${search})}">
+												<button type="submit" class="btn-sm btn-primary">
+													<i class="fa-solid fa-pencil"></i>
+												</button>
+												<input type="text" hidden="true" name="id"
+													th:value="${p.id}" />
+											</form>
+										</div>
+										<div>
+											<form method="post"
+												th:action="@{/persons/delete(page=${paging.getCurrentPage()},search=${search})}">
+												<button type="submit" class="btn-sm btn-secondary">
+													<i class="fa-regular fa-eye"></i>
+												</button>
+												<input type="text" hidden="true" name="id"
+													th:value="${p.id}" />
+											</form>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center"
+							th:if="${paging.getTotalPages()>1}">
+							<li class="page-item me-1"><a class="page-link"
+								th:href="@{persons(page=${paging.firstPage()},search=${search})}">first</a></li>
+							<li class="page-item"
+								th:classappend="${paging.canPrev()? '' : 'disabled'}"><a
+								class="page-link"
+								th:href="@{persons(page=${paging.getCurrentPage()-1},search=${search})}"
+								aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+							</a></li>
+							<th:block th:each="item,status : ${paging.getItems()}">
+								<li th:if="${status.current.getItemType().name() == 'NUMERAL'}"
+									class="page-item"
+									th:classappend="${status.current.isActive()? 'active' : ''}"><a
+									class="page-link" th:text="${status.current.getPageNumber()}"
+									th:href="@{persons(page=${status.current.getPageIndex()})}"></a></li>
+								<li th:if="${status.current.getItemType().name() == 'DOTS'}"
+									class="page-item disabled"><a class="page-link" href="#">...</a></li>
+							</th:block>
+							<li class="page-item"
+								th:classappend="${paging.canNext()? '' : 'disabled'}"><a
+								class="page-link"
+								th:href="@{persons(page=${paging.getCurrentPage()+1},search=${search})}"
+								aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+							</a></li>
+							<li class="page-item ms-1"><a class="page-link"
+								th:href="@{persons(page=${paging.lastPage()},search=${search})}">last</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

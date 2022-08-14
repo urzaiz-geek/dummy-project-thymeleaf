@@ -6,6 +6,8 @@ public class Paging {
 	private final int totalPages;
 	private int visibleItems;
 	private int currentPage;
+	private final int lastPage;
+	private PageItem[] items;
 
 	public Paging(int totalPages, int visibleItems, int currentPage) throws IllegalArgumentException {
 		if (totalPages < 0) {
@@ -13,9 +15,12 @@ public class Paging {
 		}
 
 		this.totalPages = totalPages;
+		this.lastPage = totalPages - 1;
 		setVisibleItems(visibleItems);
-		if (currentPage <= totalPages && currentPage >= 0) {
+		if (currentPage <= totalPages && currentPage >= 1) {
 			this.currentPage = currentPage;
+		} else {
+			throw new IllegalArgumentException("invalid value for currentPage");
 		}
 	}
 
@@ -27,6 +32,15 @@ public class Paging {
 				this.visibleItems = visibleItems;
 			}
 		}
+	}
+
+	public int getTotalPages() {
+		return this.totalPages;
+	}
+
+	// pages start at 0
+	public int getCurrentPage() {
+		return currentPage - 1;
 	}
 
 	public PageItem[] getItems() {
@@ -49,38 +63,39 @@ public class Paging {
 			limit += visibleItems - 1;
 		}
 
-		PageItem[] returned = null;
 		int pageIncrementor = 0;
 		if (totalPages < visibleItems) {
-			returned = new PageItem[totalPages];
+			items = new PageItem[totalPages];
 			for (int i = 0; i < totalPages; i++) {
-				returned[i] = new PageItem(pageIncrementor + min, ItemType.NUMERAL);
+				items[i] = new PageItem(pageIncrementor + min, ItemType.NUMERAL,
+						currentPage == (pageIncrementor + min));
 				pageIncrementor++;
 			}
 		} else {
 			if (limit > totalPages)
 				limit = totalPages;
-			returned = new PageItem[limit - min + 2];
+			items = new PageItem[limit - min + 2];
 
 			// filling it
 
 			int init = currentFrame == frames ? 1 : 0;
-			int end = currentFrame == frames ? returned.length : returned.length - 1;
+			int end = currentFrame == frames ? items.length : items.length - 1;
 			for (int i = init; i < end; i++) {
-				returned[i] = new PageItem(pageIncrementor + min, ItemType.NUMERAL);
+				items[i] = new PageItem(pageIncrementor + min, ItemType.NUMERAL,
+						currentPage == (pageIncrementor + min));
 				pageIncrementor++;
 			}
 
 			// we have to append dots
 			if (currentFrame == frames) {
-				returned[0] = new PageItem(0, ItemType.DOTS);
+				items[0] = new PageItem(0, ItemType.DOTS, false);
 			} else { // we have to prepend dots
-				returned[end] = new PageItem(0, ItemType.DOTS);
+				items[end] = new PageItem(0, ItemType.DOTS, false);
 			}
 
 		}
 
-		return returned;
+		return items;
 	}
 
 	public boolean canNext() {
@@ -88,14 +103,14 @@ public class Paging {
 	}
 
 	public boolean canPrev() {
-		return currentPage > 1;
+		return currentPage - 1 > 0;
 	}
 
-	public PageItem first() {
-		return new PageItem(1, ItemType.NUMERAL);
+	public int firstPage() {
+		return 0;
 	}
 
-	public PageItem last() {
-		return new PageItem(totalPages, ItemType.NUMERAL);
+	public int lastPage() {
+		return lastPage;
 	}
 }
